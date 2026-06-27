@@ -35,8 +35,8 @@ VOICE_PROFILE = ROOT / "data/voice_profile.md"
 KNOWLEDGE_DIR = ROOT / "knowledge"
 DRAFTER = ROOT / ".claude/agents/drafter.md"
 REVIEWER = ROOT / ".claude/agents/reviewer.md"
-DRAFT_MODEL = os.getenv("DRAFT_MODEL", "claude-sonnet-4-6")
-REVIEW_MODEL = os.getenv("REVIEW_MODEL", "claude-sonnet-4-6")
+DRAFT_MODEL = os.getenv("DRAFT_MODEL", "claude-opus-4-8")            # confirmed on this CLI
+REVIEW_MODEL = os.getenv("REVIEW_MODEL", "claude-haiku-4-5-20251001")  # fast review
 
 
 def body(path):

@@ -4,11 +4,16 @@ Loaded from disk, offline (the model is cached by the M1 build scripts).
 """
 
 import os
+import warnings
 from functools import lru_cache
 
 # model is cached from M1 builds; never touch the network mid-run
 os.environ.setdefault("HF_HUB_OFFLINE", "1")
 os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
+# keep the terminal clean for the live demo (no telemetry/warning noise)
+os.environ.setdefault("ANONYMIZED_TELEMETRY", "False")
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+warnings.filterwarnings("ignore")
 
 import chromadb  # noqa: E402
 from dotenv import load_dotenv  # noqa: E402
