@@ -1,0 +1,49 @@
+# Handling map (M2 R1.2 / R3.3) — what each category means downstream.
+# Keyed by the category names M1 discovered (data/categories.yaml). If M1
+# rediscovers different names, update this file. Used by M3 to decide the
+# default action and which sources/tools to ground against.
+#
+#   default_action: the typical next step for this category
+#   tools:          knowledge docs / live connectors relevant to it
+#   escalate:       true → always route to Sid (sets needs_human), never auto-draft
+
+handling:
+  lead_nurture:
+    default_action: reply with course details + link; nudge toward enrolling
+    tools: [course.md, event.md]
+    escalate: false
+
+  price_negotiation:
+    default_action: acknowledge with empathy; share published price only; defer any discount to Sid
+    tools: [course.md]
+    escalate: true        # discounts/deals are Sid's call (principles)
+
+  sales_persuasion:
+    default_action: reply with a personal, high-conviction pitch (no discounts)
+    tools: [course.md, event.md]
+    escalate: false
+
+  student_admin:
+    default_action: confirm onboarding / verify payment or registration before answering
+    tools: [stripe, beehiiv]
+    escalate: false       # but refunds → escalate (handled by reviewer/principles)
+
+  cohort_mentorship:
+    default_action: answer the question or give candid advice; offer to continue on Slack
+    tools: [course.md]
+    escalate: false
+
+  brand_partnership:
+    default_action: share the standard rate card; defer any custom terms to Sid
+    tools: [sponsorship.md]
+    escalate: true        # committing terms/deals is Sid's call
+
+  admin_vendor:
+    default_action: handle the logistics; check the calendar for scheduling
+    tools: [calendar]
+    escalate: false
+
+  uncertain:
+    default_action: route to Sid — could not confidently categorize
+    tools: []
+    escalate: true
