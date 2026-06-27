@@ -1,0 +1,20 @@
+# Email Assistant — pinned for a reproducible live demo on Apple Silicon (Python 3.11+)
+
+# --- M1: voice profile via embeddings ---
+sentence-transformers==3.0.1   # local embedding model, no API key
+chromadb==0.5.5                 # local persistent vector store
+
+# --- M2: classification schema ---
+pydantic==2.8.2                 # typed classification output
+pyyaml==6.0.2                   # categories.yaml
+
+# --- M3: dashboard ---
+streamlit==1.37.1              # dashboard UI
+
+# --- Gmail extraction (run on your Mac for the real 500-email pull) ---
+google-api-python-client==2.140.0
+google-auth-oauthlib==1.2.1
+google-auth-httplib2==0.2.0
+
+# --- misc ---
+python-dotenv==1.0.1
