@@ -84,13 +84,27 @@ def main():
         for mid in ids:
             msg = service.users().messages().get(userId="me", id=mid, format="full").execute()
             h = msg["payload"].get("headers", [])
+
+            # full thread context: everything before this message in the thread
+            thread = service.users().threads().get(
+                userId="me", id=msg["threadId"], format="full").execute()
+            prior = []
+            for t in sorted(thread["messages"], key=lambda x: int(x.get("internalDate", "0"))):
+                if t["id"] == mid:
+                    break
+                th = t["payload"].get("headers", [])
+                tb = strip_quotes(extract_body(t["payload"]))
+                if tb:
+                    prior.append(f"{header(th, 'From')}: {tb}")
+
             f.write(json.dumps({
                 "id": mid,
                 "sender": header(h, "From"),
                 "subject": header(h, "Subject"),
                 "body": strip_quotes(extract_body(msg["payload"])),
+                "thread": "\n\n".join(prior),   # prior messages in the conversation
             }) + "\n")
-    print(f"Wrote {len(ids)} inbound emails to {OUT}")
+    print(f"Wrote {len(ids)} inbound emails (with thread context) to {OUT}")
 
 
 if __name__ == "__main__":

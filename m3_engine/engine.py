@@ -57,6 +57,19 @@ def claude(prompt, model, timeout=180):
     return res.stdout.strip()
 
 
+def incoming_block(email):
+    """Full context for the drafter/reviewer: prior thread + the latest message."""
+    parts = []
+    if email.get("thread"):
+        parts.append(f"EARLIER IN THIS THREAD:\n{email['thread']}\n")
+    parts.append(
+        f"LATEST MESSAGE:\nFrom: {email.get('sender','')}\n"
+        f"Subject: {email.get('subject','')}\n"
+        f"Body: {email.get('body') or email.get('snippet','')}"
+    )
+    return "\n".join(parts)
+
+
 def run_connectors(email):
     """Run the connectors this category cares about (stubbed -> degrade safely)."""
     results = {}
@@ -75,8 +88,7 @@ def draft_reply(email, voice_ex, knowledge, connectors, principles, profile, fee
     know = "\n".join(f"- ({k['meta'].get('source','')}) {k['text']}" for k in knowledge)
     prompt = (
         f"{body(DRAFTER)}\n\n"
-        f"INCOMING:\nFrom: {email.get('sender','')}\nSubject: {email.get('subject','')}\n"
-        f"Body: {email.get('snippet','')}\n\n"
+        f"INCOMING:\n{incoming_block(email)}\n\n"
         f"CATEGORY: {email.get('category')} | INTENT: {email.get('intent')} | "
         f"DEFAULT ACTION: {email.get('default_action')}\n\n"
         f"VOICE:\n{voice}\n\n"
@@ -92,8 +104,7 @@ def draft_reply(email, voice_ex, knowledge, connectors, principles, profile, fee
 def review_draft(email, draft, knowledge_full, closest, connectors, principles):
     prompt = (
         f"{body(REVIEWER)}\n\n"
-        f"INCOMING:\nFrom: {email.get('sender','')}\nSubject: {email.get('subject','')}\n"
-        f"Body: {email.get('snippet','')}\n\n"
+        f"INCOMING:\n{incoming_block(email)}\n\n"
         f"DRAFT:\n{draft}\n\n"
         f"FULL KNOWLEDGE:\n{knowledge_full}\n\n"
         f"CLOSEST REAL REPLY:\n{closest}\n\n"
@@ -121,7 +132,7 @@ def main():
     for i, email in enumerate(worklist, 1):
         subj = (email.get("subject") or "")[:40]
         print(f"[{i}/{len(worklist)}] {subj}")
-        query = f"{email.get('subject','')} {email.get('snippet','')}"
+        query = f"{email.get('subject','')} {email.get('body') or email.get('snippet','')}"
         voice_ex = retrieve_voice(query, 3)
         knowledge = retrieve_knowledge(query, 4)
         connectors = run_connectors(email)

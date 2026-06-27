@@ -28,7 +28,9 @@ class Classification(BaseModel):
     id: Optional[str] = None
     sender: Optional[str] = None
     subject: Optional[str] = None
-    snippet: Optional[str] = None
+    snippet: Optional[str] = None       # short, for display
+    body: Optional[str] = None          # FULL incoming message — the drafter reads this
+    thread: Optional[str] = None        # prior conversation context (what came before)
 
     # attached from the category handling map (R3.3)
     default_action: Optional[str] = None

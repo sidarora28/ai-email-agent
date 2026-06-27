@@ -117,6 +117,8 @@ def main():
             "sender": email.get("sender"),
             "subject": email.get("subject"),
             "snippet": (email.get("body") or email.get("snippet") or "")[:160],
+            "body": email.get("body") or email.get("snippet") or "",   # full, for the drafter
+            "thread": email.get("thread"),                              # prior context
         })
         c = parse_classification(raw)
         rule = handling.get(c.category, {})
