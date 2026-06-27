@@ -1,34 +1,14 @@
-# YOUR categories — not generic inbox labels.
-# These are tuned to Sid's real inbox (Just Another PM newsletter + BWCC cohort).
-# On the `live-start` branch this file is EMPTY — Sid fills it on stage.
+# YOUR categories — fill these in LIVE on stage.
+#
+# These are not generic inbox labels. They're the buckets YOU actually triage by.
+# Each entry needs a `name` and a one-line `description` of what belongs in it.
+#
+# Shape to follow (delete this and write your own during the demo):
+#
+# categories:
+#   - name: your_category
+#     description: what belongs here
+#   - name: another_one
+#     description: ...
 
-categories:
-  - name: cohort_support
-    description: >
-      Questions from people enrolled in (or joining) the BWCC / AI PM course —
-      onboarding, logistics, "what do I build", access issues.
-
-  - name: pricing_inquiry
-    description: >
-      Prospects asking about course price, discounts, regional pricing, or
-      whether it's a fit before they buy.
-
-  - name: sponsorship
-    description: >
-      Newsletter sponsorship and feature conversations — companies wanting to be
-      featured to the 18K+ audience, or replies to Sid's outreach.
-
-  - name: mentorship
-    description: >
-      Individuals seeking career advice — breaking into PM, transitioning from
-      BA/other roles, resume/portfolio help. Not a buyer yet.
-
-  - name: partnership
-    description: >
-      Collaboration / business proposals — platforms (e.g. Maven), cross-promos,
-      speaking, podcast invites.
-
-  - name: personal
-    description: >
-      Personal or administrative mail that doesn't fit the above and usually
-      needs a quick human reply.
+categories: []
