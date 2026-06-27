@@ -1,19 +1,12 @@
 # --- Secrets / auth (NEVER commit) ---
-data/auth/
-*.json.token
+.env
 token.json
 credentials.json
-.env
 
-# --- Real inbox data (contains third-party PII — keep local, do NOT push) ---
-# These stay on disk and persist across branch switches, so main + failsafe
-# both see them locally. Regenerate with extract_emails.py / classify.py.
-data/raw_emails.jsonl
-data/inbound_emails.json
-data/classified.json
-data/classified.fallback.json
-data/drafts.json
-data/sample_inbound.txt
+# --- All local data is PII / regenerable — keep it out of the repo ---
+# (voice pairs, indexes, records, auth). Everything under data/ stays local.
+data/*
+!data/.gitkeep
 
 # --- Python ---
 __pycache__/
@@ -27,12 +20,3 @@ env/
 # --- OS ---
 .DS_Store
 Thumbs.db
-
-# --- Streamlit ---
-.streamlit/secrets.toml
-
-# NOTE: data/embeddings.db is intentionally NOT ignored on the `failsafe`
-# branch (it ships pre-populated). On `main` it starts empty and is rebuilt
-# live, so the chroma sqlite file is ignored here to keep the repo clean.
-data/embeddings.db/
-*.sqlite3

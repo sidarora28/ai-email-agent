@@ -1,7 +1,0 @@
-# Multi-Agent Dashboard Template — pinned for a reproducible run (Python 3.11+).
-# This template is intentionally lean: no embeddings / vector store. Voice
-# grounding is passed inline via the input JSON, so sentence-transformers and
-# chromadb are NOT needed here.
-
-streamlit==1.37.1     # dashboard UI
-python-dotenv==1.0.1  # loads .env for model / worker overrides

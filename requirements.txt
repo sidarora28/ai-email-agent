@@ -1,20 +1,19 @@
-# Email Assistant — pinned for a reproducible live demo on Apple Silicon (Python 3.11+)
+# Email Assistant — engine (M1–M3). Python 3.11+.
+# The M4 dashboard is a separate Claude-designed Next.js app (not in here).
 
-# --- M1: voice profile via embeddings ---
+# --- Embeddings: voice index + knowledge index ---
 sentence-transformers==3.0.1   # local embedding model, no API key
 chromadb==0.5.5                 # local persistent vector store
 
-# --- M2: classification schema ---
-pydantic==2.8.2                 # typed classification output
-pyyaml==6.0.2                   # categories.yaml
+# --- Config / schema ---
+pydantic==2.8.2                 # typed classifier output (M2)
+pyyaml==6.0.2                   # categories.yaml, config
+python-dotenv==1.0.1
 
-# --- M3: dashboard ---
-streamlit==1.37.1              # dashboard UI
-
-# --- Gmail extraction (run on your Mac for the real 500-email pull) ---
+# --- Gmail fetch (runs on your Mac for the real 200-pair pull) ---
 google-api-python-client==2.140.0
 google-auth-oauthlib==1.2.1
 google-auth-httplib2==0.2.0
 
-# --- misc ---
-python-dotenv==1.0.1
+# Voice profile is written by Claude Opus 4.8 via the `claude` CLI (no SDK dep).
+# Live connectors (Beehiiv / Stripe / Calendar) are called via MCP / their APIs at runtime.
