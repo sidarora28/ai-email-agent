@@ -1,0 +1,31 @@
+# Sales rep taxonomy — for an individual account executive's inbox.
+# Same format: a top-level `categories:` list with `name` + `description`.
+
+categories:
+  - name: new_lead
+    description: >
+      Fresh inbound interest — demo requests, "tell me more", website form
+      replies. Top of the funnel.
+
+  - name: active_deal
+    description: >
+      Replies on deals already in motion — proposal feedback, negotiation,
+      contract or pricing back-and-forth.
+
+  - name: scheduling
+    description: >
+      Booking, rescheduling, or confirming meetings, demos, and calls.
+
+  - name: objection
+    description: >
+      Pushback or hesitation — budget, timing, competitor comparison, "not
+      now" — that needs a thoughtful reply.
+
+  - name: closed_won
+    description: >
+      Signed deals, onboarding kickoff, and handoff to customer success.
+
+  - name: not_a_fit
+    description: >
+      Disqualified or out-of-scope inquiries — wrong segment, no budget, spam.
+      Archive or politely decline.

@@ -1,0 +1,4 @@
+# email-classifier-toolkit — minimal deps (Python 3.11+)
+pydantic==2.8.2        # typed classification output (schema.py)
+pyyaml==6.0.2          # read your taxonomy yaml
+python-dotenv==1.0.1   # load .env (e.g. CLASSIFY_MODEL, CLASSIFY_WORKERS)

@@ -1,0 +1,69 @@
+[
+  {
+    "id": "e1",
+    "sender": "Priya Nadkarni <priya@brightloop.io>",
+    "subject": "Stuck on the week 2 embeddings exercise",
+    "snippet": "Hi! I'm loving the cohort but I'm hitting a wall on the embeddings notebook — my vectors come back all zeros. Any pointers before tomorrow's session?",
+    "category": "cohort_support",
+    "urgency": "high",
+    "voice_examples": [
+      "Hey Priya — totally normal to hit that wall. Nine times out of ten the all-zeros thing means the model never finished downloading. Re-run the setup cell and watch for the progress bar. Ping me if it's still flat after that. Sid",
+      "Glad you're enjoying it! Quick fix: restart the kernel and run the cells top to bottom. Lmk how it goes. Sid"
+    ]
+  },
+  {
+    "id": "e2",
+    "sender": "Marcus Lee <marcus@scaleforge.dev>",
+    "subject": "Pricing for the team plan?",
+    "snippet": "We're a team of 12 and want to bring everyone through the masterclass next quarter. Do you offer group rates, and what's the per-seat price?",
+    "category": "pricing_inquiry",
+    "urgency": "medium",
+    "voice_examples": [
+      "Hi Marcus — we do team rates! For groups of 10+ it's usually a custom bundle. I'll send over the details so you can budget for next quarter. Sid"
+    ]
+  },
+  {
+    "id": "e3",
+    "sender": "Dana Whitfield <dana@orbitmedia.co>",
+    "subject": "Sponsoring the next cohort",
+    "snippet": "Orbit would love to sponsor your upcoming cohort. We're thinking a logo placement plus a short workshop slot. Can we hop on a call this week to scope it?",
+    "category": "sponsorship",
+    "urgency": "medium",
+    "voice_examples": [
+      "Hey Dana — appreciate the interest! Happy to chat sponsorship. A workshop slot could be a great fit if it's genuinely useful to the cohort. Send me a couple of times and I'll grab one. Sid"
+    ]
+  },
+  {
+    "id": "e4",
+    "sender": "Tomas Reyes <tomas.reyes@gmail.com>",
+    "subject": "Would you mentor me 1:1?",
+    "snippet": "I've followed your work for a while and I'm trying to break into AI engineering. Any chance you take on mentees, even just a monthly check-in?",
+    "category": "mentorship",
+    "urgency": "low",
+    "voice_examples": [
+      "Hi Tomas — thanks for the kind words. I keep formal 1:1 mentoring pretty limited, but the cohort is where I pour most of that energy. If you join, you'll get plenty of direct feedback from me. Sid"
+    ]
+  },
+  {
+    "id": "e5",
+    "sender": "Aisha Bello <aisha@fernhill.partners>",
+    "subject": "Co-marketing partnership idea",
+    "snippet": "We run a newsletter for indie devs (40k subs) and think there's a natural overlap. Open to a cross-promo or a co-hosted live build session?",
+    "category": "partnership",
+    "urgency": "low",
+    "voice_examples": [
+      "Hey Aisha — a co-hosted live build sounds fun and very on-brand for both audiences. Let's start small and see how it lands. What dates are you eyeing? Sid"
+    ]
+  },
+  {
+    "id": "e6",
+    "sender": "Jordan Park <jordan.park@hey.com>",
+    "subject": "Coffee when you're back in town?",
+    "snippet": "Heard you'll be in Lisbon next month. Would be great to catch up in person if you have a free hour — my treat!",
+    "category": "personal",
+    "urgency": "low",
+    "voice_examples": [
+      "Jordan! Yes — Lisbon early next month. Coffee would be great. I'll text you once my schedule firms up. Sid"
+    ]
+  }
+]

@@ -1,42 +1,31 @@
-"""app.py — the Email Assistant dashboard (Streamlit).
+"""app.py — the multi-agent Email Assistant dashboard (Streamlit).
 
-Reads data/classified.json (M2) and data/drafts.json (M3) and shows, for each
-inbound email: its category + urgency, the AI-drafted reply, and the reviewer's
-verdict. Send / Edit / Skip are display-only (no email is actually sent).
+Reads classified emails and the drafts produced by orchestrate.py, then shows,
+for each inbound email: its category + urgency, the AI-drafted reply, and the
+reviewer's verdict. Send / Edit / Skip are display-only (no email is sent).
 
-    streamlit run m3-dashboard/app.py
+    streamlit run app.py
 
-If classified.json is missing, falls back to classified.fallback.json so the
-dashboard is never empty on stage.
+Data sources (first that exists wins):
+  - classified.json            (drop in your own pre-classified inbox)
+  - examples/sample_emails.json (bundled synthetic fallback — renders out of box)
+  - drafts.json                (written by orchestrate.py; optional)
+
+If drafts.json is absent the dashboard still renders the inbox; each card just
+shows a hint to run orchestrate.py.
 """
 
 import json
-import os
-import re
 from pathlib import Path
 
 import streamlit as st
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parent
+CLASSIFIED = ROOT / "classified.json"
+FALLBACK = ROOT / "examples/sample_emails.json"
+DRAFTS = ROOT / "drafts.json"
 
-# Demo mode: mask contacts' PII on screen so real names/addresses aren't
-# projected to an audience. On by default; export DEMO_MASK=0 to show real data.
-DEMO_MASK = os.getenv("DEMO_MASK", "1") != "0"
-_EMAIL_RE = re.compile(r"([A-Za-z0-9._%+-])[\w._%+-]*@([A-Za-z0-9])[\w.-]*(\.[A-Za-z]{2,})")
-_GREETING_RE = re.compile(r"\b(Hey|Hi|Hello|Dear|Thanks)\s+([A-Z][a-zA-Z]+)")
-
-
-def mask(text):
-    """Redact email addresses and greeting names for on-screen demos."""
-    if not DEMO_MASK or not text:
-        return text
-    text = _EMAIL_RE.sub(r"\1•••@\2•••\3", text)
-    text = _GREETING_RE.sub(r"\1 •••", text)
-    return text
-CLASSIFIED = ROOT / "data/classified.json"
-FALLBACK = ROOT / "data/classified.fallback.json"
-DRAFTS = ROOT / "data/drafts.json"
-
+# Tag colors keyed by category / urgency. Add your own categories here.
 CATEGORY_COLORS = {
     "cohort_support": "#4F8DFD",
     "pricing_inquiry": "#22C55E",
@@ -56,6 +45,7 @@ def load_json(path, default):
 
 
 def load_classified():
+    """Prefer a real classified.json; fall back to the bundled synthetic set."""
     if CLASSIFIED.exists():
         return load_json(CLASSIFIED, [])
     return load_json(FALLBACK, [])
@@ -66,6 +56,7 @@ def drafts_by_id():
 
 
 def tag(text, color):
+    """Render a small pill-shaped colored tag."""
     return (
         f"<span style='background:{color};color:#0B1120;padding:2px 10px;"
         f"border-radius:12px;font-size:12px;font-weight:600'>{text}</span>"
@@ -78,7 +69,7 @@ def main():
     st.markdown(
         "<h1 style='margin-bottom:0'>📬 Email Assistant</h1>"
         "<p style='color:#94A3B8;margin-top:4px'>Your inbox, triaged and drafted "
-        "in your voice. Review and send.</p>",
+        "by a drafter→reviewer agent loop. Review and send.</p>",
         unsafe_allow_html=True,
     )
 
@@ -86,7 +77,7 @@ def main():
     drafts = drafts_by_id()
 
     if not emails:
-        st.info("No classified emails yet. Run `python m2-classifier/classify.py`.")
+        st.info("No emails found. Add classified.json or examples/sample_emails.json.")
         return
 
     # --- top bar: counts + refresh ---
@@ -97,9 +88,6 @@ def main():
     if c4.button("🔄 Refresh", use_container_width=True):
         st.rerun()
 
-    if DEMO_MASK:
-        st.caption("🛡️ Demo mode: contact names & addresses masked (set DEMO_MASK=0 to show)")
-
     st.divider()
 
     for e in emails:
@@ -107,8 +95,8 @@ def main():
         urg = e.get("urgency", "low")
         with st.container(border=True):
             head, meta = st.columns([3, 1])
-            head.markdown(f"**{mask(e.get('subject','(no subject)'))}**")
-            head.caption(f"from {mask(e.get('sender',''))}")
+            head.markdown(f"**{e.get('subject','(no subject)')}**")
+            head.caption(f"from {e.get('sender','')}")
             meta.markdown(
                 tag(cat, CATEGORY_COLORS.get(cat, "#94A3B8")) + " " +
                 tag(urg, URGENCY_COLORS.get(urg, "#64748B")),
@@ -121,7 +109,7 @@ def main():
                 with left:
                     st.markdown("**Drafted reply**")
                     st.text_area(
-                        "draft", mask(d.get("draft", "")), height=160,
+                        "draft", d.get("draft", ""), height=160,
                         key=f"draft_{e.get('id')}", label_visibility="collapsed",
                     )
                 with right:
@@ -132,9 +120,9 @@ def main():
                     st.markdown(
                         tag(verdict.upper(), color), unsafe_allow_html=True,
                     )
-                    st.caption(mask(review.get("comment", "")))
+                    st.caption(review.get("comment", ""))
             else:
-                st.caption("No draft yet — run `python m3-dashboard/orchestrate.py`.")
+                st.caption("No draft yet — run `python orchestrate.py`.")
 
             b1, b2, b3, _ = st.columns([1, 1, 1, 4])
             b1.button("Send", key=f"send_{e.get('id')}", type="primary")

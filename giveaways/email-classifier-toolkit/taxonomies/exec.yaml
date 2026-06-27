@@ -1,0 +1,33 @@
+# Executive taxonomy — for a senior leader's inbox, optimized for delegation.
+# Same format: a top-level `categories:` list with `name` + `description`.
+
+categories:
+  - name: decision_needed
+    description: >
+      Messages where someone is explicitly waiting on your call, sign-off, or
+      approval. Highest signal.
+
+  - name: direct_report
+    description: >
+      Updates, asks, and escalations from your team — status, blockers, 1:1
+      prep, people issues.
+
+  - name: external_exec
+    description: >
+      Peer executives, board members, partners, and key customers reaching out
+      relationship-to-relationship.
+
+  - name: delegate
+    description: >
+      Requests that don't need you personally and should be routed to your
+      EA or a team member.
+
+  - name: fyi
+    description: >
+      Informational mail to be aware of but not act on — reports, newsletters,
+      cc's, announcements.
+
+  - name: personal
+    description: >
+      Personal or admin mail that doesn't fit the above and needs a quick
+      human reply.
