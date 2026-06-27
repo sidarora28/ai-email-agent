@@ -81,9 +81,11 @@ def render_pairs(pairs):
 
 
 def call_opus(prompt: str) -> str:
+    # Pipe the prompt via stdin (not argv) — 200 full emails would exceed the
+    # shell's argument-size limit if passed as a command-line argument.
     result = subprocess.run(
-        ["claude", "-p", prompt, "--model", MODEL],
-        capture_output=True, text=True, timeout=600,
+        ["claude", "-p", "--model", MODEL],
+        input=prompt, capture_output=True, text=True, timeout=900,
     )
     if result.returncode != 0:
         raise RuntimeError(f"claude CLI failed: {result.stderr[:300]}")
