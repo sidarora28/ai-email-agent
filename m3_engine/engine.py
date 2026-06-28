@@ -172,7 +172,11 @@ def main():
                 continue
 
             closest = voice_ex[0]["text"] if voice_ex else ""
-            print(f"\n\n   🔍  {BOLD}REVIEWER{RESET} {DIM}checking voice · grounding · principles …{RESET}")
+            if closest:
+                print(f"\n\n   🔎  {DIM}embeddings found your closest real reply — the "
+                      f"reviewer's benchmark:{RESET}")
+                print(f"      {DIM}\"{closest[:150].strip()}…\"{RESET}")
+            print(f"\n   🔍  {BOLD}REVIEWER{RESET} {DIM}checking voice · grounding · principles …{RESET}")
             rev = review(review_prompt(email, draft, knowledge_full, closest, connectors, principles))
 
             if rev.get("verdict") == "revise":
