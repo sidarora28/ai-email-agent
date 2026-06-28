@@ -74,9 +74,10 @@ def stream_claude(prompt, model, prefix="      "):
         sys.stdout.flush()
         chunks.append(line)
     proc.wait()
+    text = "".join(chunks).strip()
     if proc.returncode != 0:
-        raise RuntimeError("claude (stream) failed")
-    return "".join(chunks).strip()
+        raise RuntimeError(text or "claude call failed")
+    return text
 
 
 def incoming_block(email):
@@ -153,32 +154,38 @@ def main():
         print(f"📨  {BOLD}{name_of(email.get('sender'))}{RESET} — \"{email.get('subject','')}\"")
         print(f"{DIM}    {email.get('category')} · {email.get('intent')}{RESET}\n")
 
-        query = f"{email.get('subject','')} {email.get('body') or email.get('snippet','')}"
-        voice_ex = retrieve_voice(query, 3)
-        knowledge = retrieve_knowledge(query, 4)
-        connectors = run_connectors(email)
+        try:
+            query = f"{email.get('subject','')} {email.get('body') or email.get('snippet','')}"
+            voice_ex = retrieve_voice(query, 3)
+            knowledge = retrieve_knowledge(query, 4)
+            connectors = run_connectors(email)
 
-        print(f"   ✍️  {BOLD}WRITER{RESET} {DIM}drafting in your voice, grounded in your facts:{RESET}\n")
-        draft = stream_claude(
-            draft_prompt(email, voice_ex, knowledge, connectors, principles, profile),
-            DRAFT_MODEL)
-
-        if draft.startswith("NO_DRAFT"):
-            print(f"\n   {YELLOW}⚠️  no draft — {draft}{RESET}\n")
-            records.append({**email, "status": "insufficient_info", "draft": "",
-                            "review": {"comment": draft}})
-            continue
-
-        closest = voice_ex[0]["text"] if voice_ex else ""
-        print(f"\n\n   🔍  {BOLD}REVIEWER{RESET} {DIM}checking voice · grounding · principles …{RESET}")
-        rev = review(review_prompt(email, draft, knowledge_full, closest, connectors, principles))
-
-        if rev.get("verdict") == "revise":
-            print(f"   {YELLOW}↻ revise: {rev.get('comment','')[:70]}{RESET}\n")
+            print(f"   ✍️  {BOLD}WRITER{RESET} {DIM}drafting in your voice, grounded in your facts:{RESET}\n")
             draft = stream_claude(
-                draft_prompt(email, voice_ex, knowledge, connectors, principles,
-                             profile, feedback=rev.get("comment", "")), DRAFT_MODEL)
+                draft_prompt(email, voice_ex, knowledge, connectors, principles, profile),
+                DRAFT_MODEL)
+
+            if draft.startswith("NO_DRAFT"):
+                print(f"\n   {YELLOW}⚠️  no draft — {draft}{RESET}\n")
+                records.append({**email, "status": "insufficient_info", "draft": "",
+                                "review": {"comment": draft}})
+                continue
+
+            closest = voice_ex[0]["text"] if voice_ex else ""
+            print(f"\n\n   🔍  {BOLD}REVIEWER{RESET} {DIM}checking voice · grounding · principles …{RESET}")
             rev = review(review_prompt(email, draft, knowledge_full, closest, connectors, principles))
+
+            if rev.get("verdict") == "revise":
+                print(f"   {YELLOW}↻ revise: {rev.get('comment','')[:70]}{RESET}\n")
+                draft = stream_claude(
+                    draft_prompt(email, voice_ex, knowledge, connectors, principles,
+                                 profile, feedback=rev.get("comment", "")), DRAFT_MODEL)
+                rev = review(review_prompt(email, draft, knowledge_full, closest, connectors, principles))
+        except Exception as e:
+            msg = (str(e).splitlines() or ["claude error"])[-1][:120]
+            print(f"\n   {YELLOW}⚠️  skipped — {msg}{RESET}\n")
+            records.append({**email, "status": "error", "draft": "", "review": {"comment": msg}})
+            continue
 
         tick = f"{GREEN}✓{RESET}" if rev.get("verdict") == "approve" else f"{YELLOW}↻{RESET}"
         g = f"{GREEN}✓{RESET}" if rev.get("grounded") else f"{YELLOW}✗{RESET}"

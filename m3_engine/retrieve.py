@@ -3,6 +3,7 @@
 Loaded from disk, offline (the model is cached by the M1 build scripts).
 """
 
+import logging
 import os
 import warnings
 from functools import lru_cache
@@ -14,6 +15,10 @@ os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 os.environ.setdefault("ANONYMIZED_TELEMETRY", "False")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 warnings.filterwarnings("ignore")
+# chromadb's telemetry logs "Failed to send telemetry event ..." regardless of the
+# env var (a posthog version bug). Silence its loggers outright.
+for _n in ("chromadb", "chromadb.telemetry", "chromadb.telemetry.product.posthog"):
+    logging.getLogger(_n).setLevel(logging.CRITICAL)
 
 import chromadb  # noqa: E402
 from dotenv import load_dotenv  # noqa: E402
@@ -33,7 +38,9 @@ def _model():
 
 @lru_cache(maxsize=2)
 def _collection(path, name):
-    return chromadb.PersistentClient(path=path).get_collection(name)
+    client = chromadb.PersistentClient(
+        path=path, settings=chromadb.Settings(anonymized_telemetry=False))
+    return client.get_collection(name)
 
 
 def _query(path, name, text, k):

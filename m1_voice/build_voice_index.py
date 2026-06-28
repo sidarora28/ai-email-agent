@@ -8,6 +8,7 @@ real reply and check the draft is "close enough" to how he actually writes.
 """
 
 import json
+import logging
 import os
 import time
 from pathlib import Path
@@ -17,6 +18,7 @@ from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 
 load_dotenv()
+logging.getLogger("chromadb").setLevel(logging.CRITICAL)  # silence telemetry noise
 
 PAIRS = Path(os.getenv("VOICE_PAIRS", "data/voice_pairs.jsonl"))
 INDEX = os.getenv("VOICE_INDEX", "data/voice_index.db")
@@ -48,7 +50,8 @@ def main():
     print(f"Loading model {MODEL_NAME} ...")
     model = SentenceTransformer(MODEL_NAME)
 
-    client = chromadb.PersistentClient(path=INDEX)
+    client = chromadb.PersistentClient(
+        path=INDEX, settings=chromadb.Settings(anonymized_telemetry=False))
     try:
         client.delete_collection(COLLECTION)
     except Exception:

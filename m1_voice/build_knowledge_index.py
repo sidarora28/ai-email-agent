@@ -7,6 +7,7 @@ Chroma index. At draft time the drafter retrieves from here to ground facts
     python m1_voice/build_knowledge_index.py
 """
 
+import logging
 import os
 import re
 import time
@@ -17,6 +18,7 @@ from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 
 load_dotenv()
+logging.getLogger("chromadb").setLevel(logging.CRITICAL)  # silence telemetry noise
 
 KNOWLEDGE_DIR = Path(os.getenv("KNOWLEDGE_DIR", "knowledge"))
 INDEX = os.getenv("KNOWLEDGE_INDEX", "data/knowledge_index.db")
@@ -58,7 +60,8 @@ def main():
     print(f"Loading model {MODEL_NAME} ...")
     model = SentenceTransformer(MODEL_NAME)
 
-    client = chromadb.PersistentClient(path=INDEX)
+    client = chromadb.PersistentClient(
+        path=INDEX, settings=chromadb.Settings(anonymized_telemetry=False))
     try:
         client.delete_collection(COLLECTION)
     except Exception:
