@@ -71,15 +71,22 @@ def strip_quotes(body):
     return re.sub(r"\n{3,}", "\n\n", "\n".join(lines)).strip()
 
 
+def name_of(sender):
+    import re as _re
+    return _re.sub(r"\s*<.*?>", "", sender or "").strip() or sender
+
+
 def main():
     service = get_service()
-    print(f"Fetching up to {LIMIT} emails matching: {QUERY}")
+    print("\n\033[1m📥  STEP 1 — Fetch new emails\033[0m")
+    print(f"\033[2m    pulling inbox ({QUERY})…\033[0m\n")
     resp = service.users().messages().list(
         userId="me", q=QUERY, maxResults=LIMIT,
     ).execute()
     ids = [m["id"] for m in resp.get("messages", [])]
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
+    rows = []
     with OUT.open("w") as f:
         for mid in ids:
             msg = service.users().messages().get(userId="me", id=mid, format="full").execute()
@@ -97,14 +104,19 @@ def main():
                 if tb:
                     prior.append(f"{header(th, 'From')}: {tb}")
 
+            sender, subject = header(h, "From"), header(h, "Subject")
             f.write(json.dumps({
                 "id": mid,
-                "sender": header(h, "From"),
-                "subject": header(h, "Subject"),
+                "sender": sender,
+                "subject": subject,
                 "body": strip_quotes(extract_body(msg["payload"])),
                 "thread": "\n\n".join(prior),   # prior messages in the conversation
             }) + "\n")
-    print(f"Wrote {len(ids)} inbound emails (with thread context) to {OUT}")
+            rows.append((name_of(sender), subject))
+
+    for nm, subj in rows:
+        print(f"   • \033[1m{nm[:22]:22}\033[0m {(subj or '')[:46]}")
+    print(f"\n\033[32m✓\033[0m {len(rows)} emails fetched  \033[2m→ data/inbound.jsonl\033[0m\n")
 
 
 if __name__ == "__main__":

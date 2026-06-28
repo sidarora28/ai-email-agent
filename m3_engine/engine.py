@@ -139,9 +139,9 @@ def main():
     worklist = [e for e in classified if e.get("reply_needed") and not e.get("needs_human")]
     skipped = [e for e in classified if not (e.get("reply_needed") and not e.get("needs_human"))]
 
-    print(f"\n{BOLD}📬  Email Assistant{RESET}  {DIM}— drafting replies in Sid's voice{RESET}")
-    print(f"{DIM}    {len(classified)} triaged · {len(worklist)} need a reply · "
-          f"{len(skipped)} routed to Sid / skipped{RESET}\n")
+    print(f"\n{BOLD}✍️  STEP 3 — Write replies{RESET}")
+    print(f"{DIM}    {len(worklist)} to draft · a WRITER drafts in Sid's voice, "
+          f"a REVIEWER checks each one{RESET}\n")
 
     principles = body(PRINCIPLES)
     profile = VOICE_PROFILE.read_text() if VOICE_PROFILE.exists() else ""
@@ -158,7 +158,7 @@ def main():
         knowledge = retrieve_knowledge(query, 4)
         connectors = run_connectors(email)
 
-        print(f"   ✍️  {BOLD}drafter{RESET} {DIM}(your voice + grounded facts):{RESET}\n")
+        print(f"   ✍️  {BOLD}WRITER{RESET} {DIM}drafting in your voice, grounded in your facts:{RESET}\n")
         draft = stream_claude(
             draft_prompt(email, voice_ex, knowledge, connectors, principles, profile),
             DRAFT_MODEL)
@@ -170,7 +170,7 @@ def main():
             continue
 
         closest = voice_ex[0]["text"] if voice_ex else ""
-        print(f"\n\n   🔍  {BOLD}reviewer{RESET} {DIM}checking voice · grounding · principles …{RESET}")
+        print(f"\n\n   🔍  {BOLD}REVIEWER{RESET} {DIM}checking voice · grounding · principles …{RESET}")
         rev = review(review_prompt(email, draft, knowledge_full, closest, connectors, principles))
 
         if rev.get("verdict") == "revise":

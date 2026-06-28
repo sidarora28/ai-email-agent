@@ -104,7 +104,8 @@ def call_agent(prompt):
 def main():
     emails = load_inbound()
     handling = handling_map()
-    print(f"Classifying {len(emails)} emails in one batched call (model: {MODEL}) ...\n")
+    print(f"\n\033[1m🏷️  STEP 2 — Categorize\033[0m")
+    print(f"\033[2m    sorting {len(emails)} emails into your categories…\033[0m\n")
 
     raw_list = call_agent(build_prompt(emails, agent_prompt(), categories_block()))
     if len(raw_list) != len(emails):
@@ -129,15 +130,18 @@ def main():
         c.default_action = rule.get("default_action")
         c.tools = rule.get("tools", [])
         results.append(c)
-        flag = "→Sid" if c.needs_human else ("skip" if not c.reply_needed else "draft")
-        print(f"  {c.category:18} {c.urgency.value:6} ({c.confidence}) {flag:5} "
-              f"{(c.subject or '')[:34]}")
+        if not c.reply_needed:
+            flag = "\033[2mskip · automated\033[0m"
+        elif c.needs_human:
+            flag = "\033[33m→ Sid\033[0m"
+        else:
+            flag = "\033[32m→ draft\033[0m"
+        print(f"   \033[1m{c.category:18}\033[0m {flag:22} {(c.subject or '')[:36]}")
 
     OUT.write_text(json.dumps([c.model_dump(mode="json") for c in results], indent=2))
     n_draft = sum(1 for c in results if c.reply_needed and not c.needs_human)
-    print(f"\nDone -> {OUT}")
-    print(f"  {n_draft} ready to draft · {sum(c.needs_human for c in results)} to Sid · "
-          f"{sum(not c.reply_needed for c in results)} no-reply")
+    print(f"\n\033[32m✓\033[0m {n_draft} to draft · {sum(c.needs_human for c in results)} to Sid · "
+          f"{sum(not c.reply_needed for c in results)} skipped\n")
 
 
 if __name__ == "__main__":
