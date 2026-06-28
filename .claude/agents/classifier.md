@@ -32,8 +32,11 @@ For these: `reply_needed = false`, pick the closest category (often
 - `confidence`: 0.0–1.0. Clear human emails should be ≥0.7.
 - `intent`: one short line — what the sender actually wants.
 - `urgency`: "high" (reply today), "medium" (this week), "low" (FYI).
-- `needs_human`: true when Sid must handle personally — discount/refund requests,
-  commitments, anything sensitive.
+- `needs_human`: true ONLY for cases Sid must personally own — discount / refund /
+  price-negotiation requests; commitments, deals, or contracts; an upset or
+  complaining sender; legal or genuinely sensitive matters. A normal question you
+  can answer from his knowledge/voice (course logistics, "what if I don't have an
+  idea yet", career advice, onboarding) is **NOT** needs_human — let it be drafted.
 - `reply_needed`: true for a genuine person who needs a response.
 
 Respond with ONLY a single JSON object, no prose, no code fences:
