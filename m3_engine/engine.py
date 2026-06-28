@@ -195,8 +195,19 @@ def main():
         records.append({**email, "status": "drafted", "draft": draft, "review": rev})
         time.sleep(0.3)
 
-    RECORDS.write_text(json.dumps(records, indent=2))
     drafted = sum(1 for r in records if r["status"] == "drafted")
+
+    # failsafe: if live drafting produced nothing (e.g. usage limit), fall back
+    # to the last good run so the demo always has output to show.
+    failsafe = ROOT / "data/failsafe/records.json"
+    if drafted == 0 and failsafe.exists():
+        RECORDS.write_text(failsafe.read_text())
+        print(f"{BLUE}{'─'*70}{RESET}")
+        print(f"{YELLOW}⚠️  live drafting unavailable — showing last good drafts "
+              f"from failsafe.{RESET}\n")
+        return
+
+    RECORDS.write_text(json.dumps(records, indent=2))
     print(f"{BLUE}{'─'*70}{RESET}")
     print(f"{BOLD}Done.{RESET} {drafted} drafts ready for review  {DIM}→ {RECORDS}{RESET}\n")
 
