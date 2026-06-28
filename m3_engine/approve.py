@@ -1,9 +1,10 @@
-"""approve.py — Segment 4: review each draft, approve it into Gmail Drafts.
+"""approve.py — Segment 4: review a draft, approve it into Gmail Drafts.
 
-Shows each reviewed draft. You approve / skip / edit. On approve it creates a
-DRAFT in your Gmail (drafts.create) — it is NEVER sent. You hit send yourself.
+    python m3_engine/approve.py        # list the drafts with their numbers
+    python m3_engine/approve.py 2      # review draft #2 only — approve / skip / edit
 
-    python m3_engine/approve.py
+Approve drafts one at a time, by number. On approve it creates a DRAFT in your
+Gmail (drafts.create) — it is NEVER sent. You hit send yourself.
 
 Needs a write scope (gmail.compose) — first run re-auths in the browser. Uses a
 separate token (token_compose.json) so your read-only fetch token is untouched.
@@ -72,30 +73,40 @@ def make_draft(svc, to, subject, body):
     return svc.users().drafts().create(userId="me", body={"message": {"raw": raw}}).execute()
 
 
+def list_drafts(drafts):
+    print(f"\n{BOLD}✅  STEP 4 — Review & approve{RESET}  {DIM}{len(drafts)} drafts · "
+          f"approve one at a time → Gmail Drafts (never sent){RESET}\n")
+    for i, r in enumerate(drafts, 1):
+        print(f"  {BOLD}{i}{RESET}  to {r.get('sender','')}  {DIM}re: {r.get('subject','')}{RESET}")
+    print(f"\n{DIM}Approve one:{RESET} python m3_engine/approve.py <number>\n")
+
+
+def approve_one(drafts, n):
+    if n < 1 or n > len(drafts):
+        print(f"{YELLOW}No draft #{n}. There are {len(drafts)} drafts (1–{len(drafts)}).{RESET}\n")
+        return
+    r = drafts[n - 1]
+    print(f"\n{'─'*70}\n{BOLD}{n}/{len(drafts)}  to {r.get('sender','')}{RESET}")
+    print(f"{DIM}re: {r.get('subject','')}{RESET}\n{r['draft']}\n")
+    choice = input(f"{BOLD}approve / skip / edit  [a/s/e]:{RESET} ").strip().lower()
+    if choice == "e":
+        r["draft"] = edit(r["draft"])
+        choice = "a"
+    if choice == "a":
+        svc = service()
+        make_draft(svc, email_addr(r.get("sender", "")), r.get("subject", ""), r["draft"])
+        print(f"   {GREEN}✓ added to your Gmail Drafts — review and send it yourself.{RESET}\n")
+    else:
+        print(f"   {YELLOW}↷ skipped{RESET}\n")
+
+
 def main():
     records = json.loads(RECORDS.read_text())
     drafts = [r for r in records if r.get("status") == "drafted" and r.get("draft")]
-    print(f"\n{BOLD}✅  STEP 4 — Review & approve{RESET}  {DIM}{len(drafts)} drafts · "
-          f"approve → Gmail Drafts (never sent){RESET}\n")
-    svc = service()
-
-    approved = 0
-    for i, r in enumerate(drafts, 1):
-        print(f"{'─'*70}\n{BOLD}{i}/{len(drafts)}  to {r.get('sender','')}{RESET}")
-        print(f"{DIM}re: {r.get('subject','')}{RESET}\n{r['draft']}\n")
-        choice = input(f"{BOLD}approve / skip / edit  [a/s/e]:{RESET} ").strip().lower()
-        if choice == "e":
-            r["draft"] = edit(r["draft"])
-            choice = "a"
-        if choice == "a":
-            make_draft(svc, email_addr(r.get("sender", "")), r.get("subject", ""), r["draft"])
-            approved += 1
-            print(f"   {GREEN}✓ added to your Gmail Drafts{RESET}\n")
-        else:
-            print(f"   {YELLOW}↷ skipped{RESET}\n")
-
-    print(f"{'─'*70}\n{BOLD}Done.{RESET} {approved} draft(s) in your Gmail Drafts — "
-          f"review and send them yourself.\n")
+    if len(sys.argv) > 1:
+        approve_one(drafts, int(sys.argv[1]))
+    else:
+        list_drafts(drafts)
 
 
 if __name__ == "__main__":
