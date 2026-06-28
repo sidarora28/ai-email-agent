@@ -15,13 +15,17 @@ Two clicks, no typing:
 
 That's the whole setup. No downloads, no project to clone. From here on, you're just chatting.
 
-> **How to read this guide:** each step is **one thing to ask Claude Code**, shown in a box like the ones below, plus a quick note on *why it matters*. Type the request, watch it work, then go to the next step. Feel free to use your own words — these are just examples.
+> **How to read this guide:** each step is **one thing to ask Claude Code**, shown in a code block, plus a quick note on *why it matters*. Copy the request, paste it in, watch it work, then go to the next step. These are the same prompts used in the live build — feel free to tweak them in your own words.
 
 ---
 
 ## Step 1 — Connect and read your inbox
 
-> Pull my most recent unread emails from Gmail and show me a short list — sender, subject, and a one-line summary of each.
+```text
+Connect to my Gmail and pull my 10 most recent unread emails. For each one,
+show me the sender, the subject, and a one-line summary, so I can see you're
+really reading my inbox.
+```
 
 **Why it matters:** This is your assistant taking its first look at your real inbox. Seeing it actually read your mail makes everything after this feel real.
 
@@ -29,7 +33,12 @@ That's the whole setup. No downloads, no project to clone. From here on, you're 
 
 ## Step 2 — Gather your real writing
 
-> Find emails I've sent as replies, and for each one also grab the email it was answering. Show me a handful of these reply-and-original pairs.
+```text
+Go through my Gmail and find emails I sent as replies. For each reply, also
+grab the original email I was answering, and save them together as "reply +
+original" pairs. Get a few dozen so there's enough to learn from, then show me
+a handful of the pairs.
+```
 
 **Why it matters:** Your voice isn't a vibe — it's learned from how you *actually* write. Pairing each reply with the email it answered teaches the assistant not just your words, but how you respond to different situations.
 
@@ -37,7 +46,12 @@ That's the whole setup. No downloads, no project to clone. From here on, you're 
 
 ## Step 3 — Learn your voice
 
-> Read through those reply pairs and write a "voice profile" describing how I write — how I open, how I sign off, my tone, how long my emails are, and the phrases I lean on. Save it so we can use it later.
+```text
+Read through those reply pairs and write me a "voice profile" — a short
+document describing how I write: how I open and sign off, my tone, how long my
+emails usually are, the phrases I lean on, and things I'd never say. Use a
+strong model (Opus) for this, and save the profile so we can reuse it later.
+```
 
 **Why it matters:** Read it aloud. It should sound like a friend describing how you email. This profile is what makes drafts sound like you and not a generic robot.
 
@@ -45,7 +59,11 @@ That's the whole setup. No downloads, no project to clone. From here on, you're 
 
 ## Step 4 — Peek at how it finds the right reply
 
-> Take two of my past replies, turn each into numbers, and tell me which two are closest in meaning. Explain in plain English what just happened.
+```text
+Take two of my past replies, turn each one into an embedding (a list of numbers
+that captures its meaning), and tell me which two are closest. Then explain in
+plain English what just happened and why "closer numbers" means "closer meaning."
+```
 
 **Why it matters:** An **embedding** is just turning a piece of text into numbers so that things that *mean* similar things sit close together. That's the trick your assistant uses to find your most relevant past reply and the right facts — no magic, just "close meanings sit close."
 
@@ -53,7 +71,12 @@ That's the whole setup. No downloads, no project to clone. From here on, you're 
 
 ## Step 5 — Give it your facts
 
-> Help me create a few short notes of real facts about my work — my product and pricing, any upcoming event, and my partnership terms. Keep them short and only include things that are actually true.
+```text
+Help me write a few short notes of real facts about my work — one for my
+product and its pricing, one for any upcoming event, and one for my
+partnership/sponsorship terms. Keep them short and only include things that are
+actually true. These notes are the only facts you're allowed to use in replies.
+```
 
 **Why it matters:** These notes are your assistant's source of truth. The golden rule: **no file, no fact.** If it isn't written here, the assistant isn't allowed to say it — that's what stops it from making things up.
 
@@ -61,7 +84,11 @@ That's the whole setup. No downloads, no project to clone. From here on, you're 
 
 ## Step 6 — Make it searchable
 
-> Build two separate searchable indexes: one for my voice profile (how I sound) and one for my fact notes (what's true). Keep them separate.
+```text
+Build two separate searchable indexes: one over my voice profile and example
+replies (how I sound), and one over my fact notes (what's true). Keep them
+separate so my style never gets mixed up with my facts.
+```
 
 **Why it matters:** Two libraries, two jobs. One answers "how would I say this?" and the other answers "what's actually true?" Keeping them apart keeps your *style* from getting tangled up with your *facts*.
 
@@ -69,7 +96,14 @@ That's the whole setup. No downloads, no project to clone. From here on, you're 
 
 ## Step 7 — Write your rules
 
-> Write a "principles" file with the rules every reply must always follow: never invent a fact, never offer a discount, never make commitments on my behalf, always sound human, and never send anything — only ever save a draft. These rules override the voice profile.
+```text
+Write me a "principles" file — the always-on rules every reply must follow:
+never state a fact that isn't in my notes, never offer or negotiate a discount,
+never make commitments or promises on my behalf, always sound human (not
+robotic), and never send anything — only ever save a draft. Make it clear these
+rules override my voice profile: if my past style conflicts with a rule, the
+rule wins.
+```
 
 **Why it matters:** Your voice profile is *style*; your principles are *policy*. **When they conflict, principles win.** Your past emails might offer a discount — but if a principle says never do that, the assistant holds back and leaves it to you.
 
@@ -77,7 +111,14 @@ That's the whole setup. No downloads, no project to clone. From here on, you're 
 
 ## Step 8 — Discover your categories and build a classifier
 
-> Look at my real emails and figure out the categories *I* actually deal with — don't use generic ones. Then build a classifier that tags each new email with its category, a confidence score, the sender's intent, how urgent it is, and whether it needs me personally (anything about discounts, refunds, or commitments should flag a human).
+```text
+Look at my real emails and work out the categories I actually deal with — my
+own buckets, not generic ones. Then build a classifier that reads a new email
+and tags it with: its category, a confidence score, the sender's intent, how
+urgent it is, and whether it needs me personally. Anything about discounts,
+refunds, or commitments should be flagged for a human. Use a fast, cheap model
+(Haiku).
+```
 
 **Why it matters:** Your inbox is yours — your buckets should be too. Flagging the sensitive stuff for a human is how the assistant knows what *not* to touch on its own.
 
@@ -85,7 +126,11 @@ That's the whole setup. No downloads, no project to clone. From here on, you're 
 
 ## Step 9 — Sort your inbox
 
-> Run the classifier on my unread emails and show me how each one was routed — should it get a draft, come straight to me, or be skipped?
+```text
+Run the classifier on my unread emails and show me how each one was routed —
+which should get an auto-draft, which should come straight to me, and which to
+skip — with the category and a short reason for each.
+```
 
 **Why it matters:** This is triage. In one pass you see your whole inbox organized by what actually needs to happen, before a single reply is written.
 
@@ -93,7 +138,11 @@ That's the whole setup. No downloads, no project to clone. From here on, you're 
 
 ## Step 10 — Write the replies (the writer)
 
-> For each email worth replying to, draft a response as me — in my voice, using only my real facts, and following my principles.
+```text
+Build the "writer": for each email worth a reply, draft a response as me — in
+my voice, using only the facts in my notes, and following my principles. Stream
+the reply as it writes so I can watch it come together. Use a strong model (Opus).
+```
 
 **Why it matters:** This is the writer agent doing its main job. Notice it only uses facts from your notes and stays inside your rules. Drafts, never sends.
 
@@ -101,7 +150,12 @@ That's the whole setup. No downloads, no project to clone. From here on, you're 
 
 ## Step 11 — Review the replies (the reviewer)
 
-> Have a second agent check every draft: Is it grounded in my real facts? Does it sound like me? Does it break any principle? If a draft fails, send it back to be rewritten once.
+```text
+Add a second agent, the "reviewer," that checks every draft before I see it: is
+every fact grounded in my full set of notes, does it sound like me, and does it
+break any principle? If a draft fails any check, send it back to the writer to
+be rewritten once. Use a fast model (Haiku).
+```
 
 **Why it matters:** One agent writes, a different agent checks. That second pair of eyes — *grounded? sounds like you? breaks a rule?* — is the reason you can actually trust the drafts.
 
@@ -109,7 +163,11 @@ That's the whole setup. No downloads, no project to clone. From here on, you're 
 
 ## Step 12 — Run the whole thing
 
-> Now run the full pipeline end to end: fetch my inbox, sort it, write replies, review them, and save the results.
+```text
+Now run the whole thing end to end: fetch my unread inbox, sort it, write
+replies for the ones that need them, review each draft, and save all the
+results so I can look at them.
+```
 
 **Why it matters:** Everything you built clicks together into one flow. Fetch → sort → write → review → save, all in a single go.
 
@@ -117,7 +175,11 @@ That's the whole setup. No downloads, no project to clone. From here on, you're 
 
 ## Step 13 — Approve your drafts, one at a time
 
-> Show me my finished drafts one at a time. When I approve one, save it to my Gmail Drafts. Don't send anything.
+```text
+Show me my finished drafts one at a time, numbered. Let me approve them one by
+one — when I approve one, save it to my Gmail Drafts. Never send anything; I'll
+hit send myself.
+```
 
 **Why it matters:** You're the human in the loop. You approve each draft individually, and approving simply parks it in Gmail Drafts. **You hit send yourself — always.**
 
