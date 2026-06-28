@@ -58,175 +58,119 @@ bash write-replies.sh
 
 ---
 
-## PART 2 — THE LIVE BUILD (all in CLAUDE CODE, no scripts)
+## PART 2 — PLAY WITH IT IN CLAUDE CODE (see every piece, live)
 
-I don't run scripts here — I **direct Claude Code** to build each piece. Each step:
-**Ask** = the prompt I type · **Show** = the concrete thing I put on screen (the
-learning) · **Say** = my line. The *Show* items are my real system files — that's
-the proof it's actually built, not a demo prop.
-
----
-
-**1. Connect Gmail**
-
-Ask:
-```text
-Connect to my Gmail and pull my 10 most recent unread emails. For each one,
-show me the sender, the subject, and a one-line summary.
-```
-**Show:** the real unread emails listed on screen.
-**Say:** "First, prove it can read my actual inbox."
+No scripts here. I just open Claude Code and **play** — poke each piece into life,
+react to what comes back, and let the audience watch. Each beat: **Ask** = roughly
+what I say to Claude (my words, loose) · **Show** = what pops up on screen (the
+learning) · **Say** = my line. The *Show* items are my real files — proof it's real,
+not a prop. 🎲 = a "try to break it" moment; those land hardest.
 
 ---
 
-**2. Fetch sent pairs**
+**1. Can it even read my inbox?**
 
-Ask:
-```text
-Now find emails I sent as replies, and for each one also grab the original
-email I was answering. Save them as "reply + original" pairs and show me a few.
-```
+Ask: *"Get into my Gmail and pull my 10 latest unread — who's emailing me right now?"*
+**Show:** my actual unread emails, live on screen.
+**Say:** "That's my real inbox. We're not in a sandbox."
+
+---
+
+**2. How do I actually write?**
+
+Ask: *"Go find how I've replied in the past — my sent replies plus the emails they answered. Show me a few."*
 **Show:** two or three `[incoming → my reply]` pairs (`data/voice_pairs.jsonl`).
-**Say:** "This is the raw material for my voice — real examples, not a vibe."
+**Say:** "This is the gold — real examples of how I write, not a vibe."
 
 ---
 
-**3. Learn voice**
+**3. Learn me.**
 
-Ask:
-```text
-Read those reply pairs and write a voice profile — one section per situation I
-write in (tone, length, openings/sign-offs, a couple of verbatim phrases I use).
-Then list the categories you discovered. Use a strong model.
-```
-**Show:** `data/voice_profile.md` — scroll to one section, read it aloud. Then the discovered category list (`data/categories.yaml`).
-**Say:** *(Opus)* "It didn't guess — it read how I actually write. Yep, that's me."
+Ask: *"Read those and tell me how I write — write it up as a voice profile, and tell me what kinds of email I get."*
+**Show:** `data/voice_profile.md` — scroll to a section, read it aloud. Then the categories it found (`data/categories.yaml`).
+**Say:** *(Opus)* "It didn't guess — it read how I actually write. That's eerie."
 
 ---
 
-**4. Embeddings demo**
+**4. Wait — how does it know what's 'similar'?**
 
-Ask:
-```text
-Take two of my past replies, turn each into an embedding (numbers that capture
-meaning), and tell me which two are closest. Explain why closer numbers means
-closer meaning.
-```
-**Show:** the actual number vectors + a similarity score on screen.
-**Say:** "Similar meaning, close numbers. That's the whole trick — no magic."
+Ask: *"Hang on, show me the trick. Turn two of my replies into numbers and tell me which two are closest in meaning."*
+**Show:** the number vectors + a similarity score.
+**Say:** "Meaning becomes numbers. Close numbers = close meaning. That's the whole secret."
 
 ---
 
-**5. Add knowledge**
+**5. Give it the truth.**
 
-Ask:
-```text
-Help me write short notes of my real facts — one for the course and its
-pricing, one for the event, one for sponsorship. Only things that are true.
-These are the only facts you're allowed to use.
-```
-**Show:** `knowledge/course.md` — point at the real price line ($600 / early bird $450).
-**Say:** "It can only state facts that live here. No file, no fact."
+Ask: *"It can't make stuff up about me — help me jot down my real facts: my pricing, the event, sponsorship."*
+**Show:** `knowledge/course.md` — point at the real price ($600 / early bird $450).
+**Say:** "If it's not written here, it's not allowed to say it. No file, no fact."
 
 ---
 
-**6. Build indexes**
+**6. Test its memory.**
 
-Ask:
-```text
-Build two separate searchable indexes — one over my voice, one over my
-knowledge. Then take a sample email and show me the closest past reply and the
-facts you'd pull for it.
-```
-**Show:** a live retrieval — paste a sample email, show the closest real reply + the matching facts it returns.
-**Say:** "Ask it anything — it finds my closest reply and the relevant facts."
+Ask: *"Here's a sample email — which of my past replies and which facts would you reach for?"*
+**Show:** the live retrieval — closest real reply + the matching facts.
+**Say:** "It found my closest reply and the right facts, on its own."
 
 ---
 
-**7. Principles**
+**7. Lay down the law.**
 
-Ask:
-```text
-Write a principles file — the always-on rules every reply must follow: never
-invent a fact, never offer a discount, never commit on my behalf, sound human,
-never send (only draft). Make clear these override the voice profile.
-```
-**Show:** `principles.md` — point at the `[HARD RULE]` lines (discount → defer to Sid; never send).
-**Say:** "Voice is style; principles are policy. On conflict, principles win."
+Ask: *"Write the rules it can never break — no made-up facts, no discounts, no promises, and never send."*
+**Show:** `principles.md` — the `[HARD RULE]` lines (discount → defer to Sid; never send).
+🎲 Ask: *"Now watch — here's someone begging for a discount. What do you do?"* → it shares the price but **won't** discount; flags it to me.
+**Say:** "Voice is style; principles are law. On conflict, the law wins."
 
 ---
 
-**8. Categories + classifier**
+**8. Make it sort.**
 
-Ask:
-```text
-Discover my own categories from my real email, then build a classifier that
-tags each email with category, confidence, intent, urgency, and needs_human.
-Use a fast model.
-```
+Ask: *"Build me something that reads an email and tags it — category, how urgent, and whether it needs me personally."*
 **Show:** the classifier's JSON for one email + the routing rules (`m2_classify/handling.yaml`).
-**Say:** *(Haiku)* "My inbox, my buckets. Discounts, refunds, commitments → flag me."
+**Say:** *(Haiku)* "My buckets, not generic ones. And the spicy stuff gets flagged to me."
 
 ---
 
-**9. Sort inbox**
+**9. Triage the whole inbox.**
 
-Ask:
-```text
-Run the classifier on my unread mail and show me the routing — which to draft,
-which come to me, which to skip — with the category and reason for each.
-```
+Ask: *"Run that across everything unread — what would you draft, what comes to me, what do we ignore?"*
 **Show:** the routing list (`data/classified.json`) — draft / → Sid / skip, per email.
-**Say:** "One pass, whole inbox triaged — before a single reply is written."
+**Say:** "Whole inbox sorted in one pass — before a single reply is written."
 
 ---
 
-**10. Writer**
+**10. The fun part — write as me.**
 
-Ask:
-```text
-Build the writer: for each reply-worthy email, draft a response as me — my
-voice, only my facts, my principles — and stream it as it writes. Use a strong
-model.
-```
-**Show:** a draft writing itself token-by-token on screen.
-**Say:** *(Opus)* "Watch it write in my voice, grounded in my facts."
+Ask: *"Okay, write a reply to this one as me."*
+**Show:** the draft typing itself out, token by token.
+**Say:** *(Opus)* "Watch it write — that's my voice, grounded in my facts."
 
 ---
 
-**11. Reviewer**
+**11. But can I trust it?**
 
-Ask:
-```text
-Add a second agent that checks each draft: grounded against my full knowledge?
-sounds like me? breaks a principle? Send it back for one rewrite if it fails.
-Use a fast model.
-```
-**Show:** the reviewer's verdict on a draft — `grounded ✓ · voice ✓ · approve` — and `.claude/agents/reviewer.md` (the exact instruction it runs).
-**Say:** *(Haiku)* "One writes, one checks. That's why I can trust it."
+Ask: *"Add a second AI to grade that draft — is it grounded? does it sound like me? does it break a rule?"*
+**Show:** the verdict — `grounded ✓ · voice ✓ · approve` — and `.claude/agents/reviewer.md`.
+🎲 Ask: *"Now sneak a wrong price into the draft and see if the reviewer catches it."* → it flags **not grounded** and sends it back.
+**Say:** "One writes, one checks. That's why I can trust it."
 
 ---
 
-**12. Run end to end**
+**12. Run the whole thing for real.**
 
-Ask:
-```text
-Now run the whole pipeline — fetch, sort, write, review — and save the results.
-```
+Ask: *"Do it all now — fetch, sort, write, review, save everything."*
 **Show:** the full run scrolling through each email, then `data/records.json` with the finished drafts.
-**Say:** "Top to bottom, no hands."
+**Say:** "Top to bottom, hands off — until I step in."
 
 ---
 
-**13. Approve one at a time**
+**13. I have the final say.**
 
-Ask:
-```text
-List my finished drafts with numbers, and let me approve them one by one —
-approving creates a Gmail draft, never sends.
-```
-**Show:** the numbered list → approve one → switch to **Gmail › Drafts** and show it sitting there, unsent.
-**Say:** "Human in the loop. I send every email myself."
+Ask: *"Show me the drafts one by one — I'll approve the good ones into Gmail."*
+**Show:** the numbered list → approve one → flip to **Gmail › Drafts**, there it sits, unsent.
+**Say:** "It drafts. I send. Always."
 
 ---
 
